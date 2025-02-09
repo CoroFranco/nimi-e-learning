@@ -1,1 +1,0 @@
-web: php-fpm -D && apache2-foreground
