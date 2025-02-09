@@ -1,1 +1,1 @@
-web: heroku-php-apache2 public/
+web: php-fpm -D && apache2-foreground
