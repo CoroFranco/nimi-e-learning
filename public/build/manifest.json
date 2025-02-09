@@ -1,0 +1,46 @@
+{
+  "_axios-C8DqakIB.js": {
+    "file": "assets/axios-C8DqakIB.js",
+    "name": "axios"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-CUm3rV4-.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/css/normalize.css": {
+    "file": "assets/normalize-D3gTHZ6C.css",
+    "src": "resources/css/normalize.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-CcJf6fCM.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "imports": [
+      "_axios-C8DqakIB.js"
+    ]
+  },
+  "resources/js/bootstrap.js": {
+    "file": "assets/bootstrap-CcJf6fCM.js",
+    "name": "bootstrap",
+    "src": "resources/js/bootstrap.js",
+    "isEntry": true,
+    "imports": [
+      "_axios-C8DqakIB.js"
+    ]
+  },
+  "resources/js/inicioSesion.js": {
+    "file": "assets/inicioSesion-BdyIK6te.js",
+    "name": "inicioSesion",
+    "src": "resources/js/inicioSesion.js",
+    "isEntry": true
+  },
+  "resources/js/profile.js": {
+    "file": "assets/profile-BZZtwasK.js",
+    "name": "profile",
+    "src": "resources/js/profile.js",
+    "isEntry": true
+  }
+}
