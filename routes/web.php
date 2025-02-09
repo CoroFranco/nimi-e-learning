@@ -33,6 +33,8 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 
 
+Route::get('/explorer', [NavController::class, 'explorer'])->name('explorer');
+Route::get('/explorer/search', [NavController::class, 'search'])->name('api.courses.search');
 
 
 
@@ -50,8 +52,7 @@ Route::middleware(['-authInstructor'])->group(function () {
 
 Route::middleware(['-auth'])->group(function () {
     Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
-    Route::get('/explorer', [NavController::class, 'explorer'])->name('explorer');
-    Route::get('/explorer/search', [NavController::class, 'search'])->name('api.courses.search');
+
 
     Route::get('/home/profile', [ProfileController::class, 'profile'])->name('profile');
     Route::post('home/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
