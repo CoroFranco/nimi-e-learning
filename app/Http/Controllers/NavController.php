@@ -19,10 +19,18 @@ class NavController extends Controller
     public function home()
     {
         $categories = Category::all();
-        $courses = Course::all(); 
-        $randomCourses = $courses->random(3); 
-        return view('home', compact('categories', 'randomCourses' ));
+        $courses = Course::all();
+    
+        // Si hay menos de 3 cursos, tomamos todos; si no hay cursos, no mostramos nada
+        if ($courses->isEmpty()) {
+            return view('home', compact('categories'))->with('randomCourses', null);
+        }
+    
+        $randomCourses = $courses->random(min(3, $courses->count()));
+    
+        return view('home', compact('categories', 'randomCourses'));
     }
+    
 
     public function explorer()
     {

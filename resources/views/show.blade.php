@@ -7,6 +7,11 @@
                         {{ $course->title }}
                     </h1>
                     <div class="m-10 flex justify-center gap-10 text-[1.5rem] " id="enrollmentMessage"></div>
+                    @if (session('success'))
+                        <div class="m-10 flex justify-center gap-10 text-[1.5rem] text-green-400">
+                            {{ session('success') }}
+                        </div>
+                    @endif
                     
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
                         <!-- Detalles del Curso -->
@@ -34,7 +39,7 @@
                             <div class="grid grid-cols-2 gap-8">
                                 @php
                                     $courseStats = [
-                                        ['icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', 'label' => $course->lessons()->sum('duration') . ' horas'],
+                                        ['icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', 'label' => $course->lessons()->sum('duration') . ' Min'],
                                         ['icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', 'label' => ucfirst($course->level)],
                                         ['icon' => 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z', 'label' => 'Certificado'],
                                         ['icon' => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', 'label' => $course->enrollments()->count() . ' estudiantes']
@@ -78,8 +83,8 @@
                             <div>
                                 <h2 class="text-3xl font-bold mb-8 text-indigo-900 border-b-2 border-indigo-100 pb-4">Sobre el instructor</h2>
                                 <div class="flex justify-center md:justify-normal items-center space-x-8 bg-gradient-to-br from-indigo-50 to-blue-50 p-8 rounded-2xl shadow-lg">
-                                    @if($course->instructor->profile_photo_url)
-                                        <img src="{{ $course->instructor->profile_photo_url }}" alt="{{ $course->instructor->name }}" class="w-32 h-32 rounded-full shadow-xl">
+                                    @if($course->instructor->profile_photo_path)
+                                        <img src="/storage/{{ $course->instructor->profile_photo_path }}" alt="{{ $course->instructor->name }}" class="w-32 h-32 rounded-full shadow-xl">
                                     @else
                                         <div class="w-32 h-32 rounded-full bg-indigo-600 flex items-center justify-center text-white text-4xl font-bold shadow-xl">
                                             {{ strtoupper(substr($course->instructor->name, 0, 1)) }}
@@ -99,13 +104,13 @@
                                 <img src="{{ $course->thumbnail_url }}" alt="{{ $course->title }}" class="w-full py-5 px-2 object-cover rounded-xl mb-8 shadow-lg">
                                 <div class="text-5xl font-bold mb-8 text-indigo-900">${{ number_format($course->price, 2) }}</div>
                                 @if ($isEnrolled)
-                                <div class="w-full bg-green-600 text-white text-center rounded-xl py-5 px-8 text-2xl font-semibold  mb-8 shadow-lg">
+                                <div class="block w-full bg-green-600 text-white text-center rounded-xl py-5 px-8 text-2xl font-semibold  mb-8 shadow-lg">
                                    Inscrito            
                                 </div>
                                     @else
-                                    <button id="enrollmentBtn" class="w-full bg-indigo-600 text-white rounded-xl py-5 px-8 text-2xl font-semibold hover:bg-indigo-700 transition duration-300 transform hover:scale-105 mb-8 shadow-lg">
-                                        Inscribirse Ahora           
-                                     </button>
+                                    <a href="{{ route('checkout', ['courseId' => $course->id]) }}" class="block w-full bg-indigo-600 text-white rounded-xl py-5 px-8 text-2xl font-semibold hover:bg-indigo-700 transition duration-300 transform hover:scale-105 mb-8 shadow-lg">
+                                        Inscribirse Ahora
+                                    </a>
                                     @endif
                                 <p class="text-lg text-gray-600 mb-8 text-center">30 días de garantía de devolución de dinero</p>
                                 <ul class="space-y-6 text-lg">
@@ -194,38 +199,7 @@
     const enrollmentMessage = document.getElementById('enrollmentMessage');
     const attachmentInput = document.getElementById('attachmentInput'); // Asegúrate de tener este input en tu HTML
 
-    enrollButton.addEventListener('click', function() {
-        const courseId = '{{ $course->id }}';
-        const formData = new FormData();
-        formData.append('course_id', courseId);
-        if (confirm('¿Estás seguro de que quieres inscribirte a este curso?')) {
-            fetch(`/courses/${courseId}/enroll`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Accept': 'application/json'
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-            enrollmentMessage.innerHTML = `<p class='text-green-500 bg-green-50 p-5 rounded-lg'>'Inscripción exitosa!'</p>`;
-            enrollmentMessage.classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-            enrollmentMessage.innerHTML = `<p class='text-red-500 bg-red-50 p-5 rounded-lg'>Ya estás inscrito en este curso.</p>`;
-            enrollmentMessage.classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    })
-        .catch(error => {
-            enrollmentMessage.textContent = 'Hubo un problema con la inscripción. Inténtalo de nuevo.';
-                        enrollmentMessage.classList.remove('hidden');
-                        enrollmentMessage.classList.add('text-red-600');
-        });
-    }});
-        
+    
         });     
                 
     </script>

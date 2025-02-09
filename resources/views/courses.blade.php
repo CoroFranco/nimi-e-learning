@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $course->title }} - {{ $lesson->title }} | Nimi Learning Platform</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/fav.jpeg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/fav.jpeg">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
@@ -15,14 +18,14 @@
         <header class="bg-[var(--course-card-bg)] shadow-lg">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
                 <a href="/home" class="flex items-center">
-                    <img src="/img/Logo1.png" alt="Nimi logo" class="h-12 w-auto">
+                    <img src="/img/Logo1.png" alt="Nimi logo" class="h-16 w-auto">
                     <span class="ml-2 text-[1.5rem] font-bold text-[var(--highlight-color)]">Learning</span>
+                    
                 </a>
                 <nav>
-                    <ul class="flex space-x-4 text-[1.2rem]">
-                        <li><a href="/dashboard" class="text-[var(--text-gray)] hover:text-[var(--text-color-index)] transition duration-150 ease-in-out">Dashboard</a></li>
-                        <li><a href="/courses" class="text-[var(--text-gray)] hover:text-[var(--text-color-index)] transition duration-150 ease-in-out">Courses</a></li>
-                        <li><a href="/profile" class="text-[var(--text-gray)] hover:text-[var(--text-color-index)] transition duration-150 ease-in-out">Profile</a></li>
+                    <ul class="flex space-x-4 text-[1.6rem]">
+                        <li><a href="/explorer" class="text-[var(--text-gray)] hover:text-[var(--text-color-index)] transition duration-150 ease-in-out">Cursos</a></li>
+                        <li><a href="/home/profile" class="text-[var(--text-gray)] hover:text-[var(--text-color-index)] transition duration-150 ease-in-out">Perfil</a></li>
                     </ul>
                 </nav>
             </div>
@@ -33,10 +36,10 @@
                 <div class="px-10 py-4 border-b border-gray-700">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
                         <div class="flex items-center mb-4 md:mb-0">
-                            <div class="h-20 w-20 rounded-full overflow-hidden border-2 border-[var(--hover-color)] p-1 transition-all duration-300 hover:scale-110">
-                                @if($course->instructor->profile_photo_url)
+                            <div class="h-32 w-32 rounded-full overflow-hidden border-2 border-[var(--hover-color)] p-1 transition-all duration-300 hover:scale-110">
+                                @if($course->instructor->profile_photo_path)
                                     <img class="h-full w-full object-cover rounded-full" 
-                                         src="{{ $course->instructor->profile_photo_url }}" 
+                                         src="/storage/{{$course->instructor->profile_photo_path }}" 
                                          alt="{{ $course->instructor->name }}">
                                 @else
                                     <div class="h-full w-full flex items-center justify-center bg-[var(--text-color)] text-[var(--text-gray)] text-[2.5rem] font-bold">
@@ -49,12 +52,19 @@
                                 <p class="text-[1.5rem] text-[var(--text-gray)]">Instructor: {{ $course->instructor->name }}</p>
                             </div>
                         </div>
+                        
                         <div class="text-right">
                             <p class="text-[1.5rem] text-[var(--text-gray)]">Level: <span class="font-semibold text-[var(--highlight-color)]">{{ ucfirst($course->level) }}</span></p>
                             <p class="text-[1.5rem] text-[var(--text-gray)]">Category: <span class="font-semibold text-[var(--highlight-color)]">{{ $course->category->name }}</span></p>
                         </div>
                     </div>
-
+                    @if($progress === 100)
+                        
+                    <a id="downloadCertificate" href="{{ url('/generate-certificate/'.$course->id) }}" class="m-auto relative inline-block text-center text-lg font-semibold text-white py-4 px-8 bg-gradient-to-r from-[#00b4d8] via-[#4fa3d1] to-[#4e94b7] rounded-xl shadow-lg hover:from-[#0094b3] hover:to-[#4179a4] transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 mt-4 w-full focus:ring-[#00b4d8] focus:ring-opacity-50">
+                        <span class="absolute inset-0 bg-opacity-30 bg-gradient-to-r from-[#00b4d8] via-[#4fa3d1] to-[#4e94b7] rounded-xl"></span>
+                        <span class="relative z-10 text-4xl">Descargar Certificado</span>
+                    </a>
+                    @endif
                     <div class="mt-8">
                         <h3 class="text-[1.5rem] font-semibold text-[var(--course-main-color)] mb-2">Course Progress</h3>
                         <div class="relative pt-1">
@@ -158,8 +168,8 @@
                                     <div class="flex items-start justify-between">
                                         <div class="flex items-center">
                                             <div class="w-10 h-10 rounded-full overflow-hidden mr-3">
-                                                @if($comment->user->profile_photo_url)
-                                                    <img src="{{ $comment->user->profile_photo_url }}" alt="{{ $comment->user->name }}" class="w-full h-full object-cover">
+                                                @if($comment->user->profile_photo_path)
+                                                    <img src="/storage/{{ $comment->user->profile_photo_path }}" alt="{{ $comment->user->name }}" class="w-full h-full object-cover">
                                                 @else
                                                     <div class="w-full h-full flex items-center justify-center bg-[var(--text-color)] text-[var(--text-gray)] text-[1.5rem] font-bold">
                                                         {{ strtoupper(substr($comment->user->name, 0, 1)) }}
@@ -173,7 +183,7 @@
                                         </div>
                                         @if(Auth::id() === $comment->user_id)
                                             <button class="text-red-400 hover:text-red-300 transition duration-200 delete-comment" data-comment-id="{{ $comment->id }}">
-                                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                             </button>
                                         @endif
                                     </div>
@@ -300,12 +310,10 @@
 
             // Comment animation
             const comments = document.querySelectorAll('#commentsSection > div');
-            gsap.set(comments, {opacity: 0, y: 20});
             gsap.to(comments, {
                 opacity: 1,
-                y: 0,
+                y: 10,
                 duration: 0.5,
-                stagger: 0.1,
                 ease: "power2.out",
                 scrollTrigger: {
                     trigger: "#commentsSection",
@@ -315,7 +323,8 @@
             });
 
             // Delete comment animation
-            document.querySelectorAll('.delete-comment').forEach(button => {
+            function deleteComment (){
+                document.querySelectorAll('.delete-comment').forEach(button => {
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
                     const commentId = this.getAttribute('data-comment-id');
@@ -349,65 +358,74 @@
                     }
                 });
             });
+            }
+            deleteComment();
 
             document.getElementById('commentForm').addEventListener('submit', function(event) {
-                event.preventDefault();
+    event.preventDefault();
 
-                const commentContent = document.getElementById('commentContent').value;
-                const formData = new FormData(this);
+    const commentContent = document.getElementById('commentContent').value;
+    const formData = new FormData(this);
 
-                fetch(this.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json',
-                    },
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const newComment = data.comment;
-                        
-                        const newCommentHtml = `
-                            <div id="comment-${newComment.id}" class="bg-[var(--course-card-bg)] p-4 rounded-lg shadow mb-4 transition-all duration-200 hover:shadow-md opacity-0 transform translate-y-4">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex items-center">
-                                        <div class="w-10 h-10 rounded-full overflow-hidden mr-3">
-                                            ${newComment.user.profile_photo_url ? 
-                                                `<img src="${newComment.user.profile_photo_url}" alt="${newComment.user.name}" class="w-full h-full object-cover">` : 
-                                                `<div class="w-full h-full flex items-center justify-center bg-[var(--text-color)] text-[var(--text-gray)] text-[1.5rem] font-bold">
-                                                    ${newComment.user.name.charAt(0).toUpperCase()}
-                                                </div>`}
-                                        </div>
-                                        <div>
-                                            <p class="font-semibold text-[var(--course-main-color)]">${newComment.user.name}</p>
-                                            <p class="text-[1.2rem] text-[var(--text-gray)]">Just now</p>
-                                        </div>
-                                    </div>
-                                    ${newComment.user_id === {{ Auth::id() }} ? 
-                                        `<button class="text-red-400 hover:text-red-300 transition duration-200 delete-comment" data-comment-id="${newComment.id}">
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                            </svg>
-                                        </button>` : ''}
-                                </div>
-                                <p class="mt-2 text-[var(--text-gray)]">${newComment.content}</p>
-                            </div>`;
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const newComment = data.comment;
+            
+            const newCommentHtml = `
+                <div id="comment-${newComment.id}" class="bg-[var(--course-card-bg)] p-4 rounded-lg shadow-xl mb-4 transition-all duration-200 hover:shadow-2xl opacity-0 transform translate-y-4">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full overflow-hidden mr-3">
+                                ${newComment.user.profile_photo_path ? 
+                                    `<img src="/storage/${newComment.user.profile_photo_path}" alt="${newComment.user.name}" class="w-full h-full object-cover">` : 
+                                    `<div class="w-full h-full flex items-center justify-center bg-[var(--text-color)] text-[var(--text-gray)] text-[1.5rem] font-bold">
+                                        ${newComment.user.name.charAt(0).toUpperCase()}
+                                    </div>`}
+                            </div>
+                            <div>
+                                <p class="font-semibold text-[var(--course-main-color)] text-[1.5rem]">${newComment.user.name}</p>
+                                <p class="text-[1.2rem] text-[var(--text-gray)]">Just now</p>
+                            </div>
+                        </div>
+                        ${newComment.user_id === {{ Auth::id() }} ? 
+                            `<button class="text-red-400 hover:text-red-300 transition duration-200 delete-comment" data-comment-id="${newComment.id}">
+                                <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>` : ''}
+                    </div>
+                    <p class="text-[1.5rem] mt-2 text-[var(--text-color-index)]">${newComment.content}</p>
+                </div>`;
 
-                        const commentsList = document.getElementById('commentsList');
-                        commentsList.insertAdjacentHTML('afterbegin', newCommentHtml);
+            const commentsList = document.getElementById('commentsList');
+            commentsList.insertAdjacentHTML('afterbegin', newCommentHtml);
 
-                        document.getElementById('commentContent').value = '';
+            document.getElementById('commentContent').value = ''; // Limpiar el campo del formulario
 
-                        const newCommentElement = document.getElementById(`comment-${newComment.id}`);
-                        gsap.to(newCommentElement, {opacity: 1, translateY: 0, duration: 0.5});
-                    }
-                })
-                .catch(error => {
-                    console.error('Error posting comment:', error);
-                });
+            const newCommentElement = document.getElementById(`comment-${newComment.id}`);
+            gsap.to(newCommentElement, {
+                opacity: 1, 
+                translateY: 0, 
+                scale: 1, 
+                duration: 0.5, 
+                ease: "back.out(1.7)" // Esta añade un efecto de rebote
             });
+            
+        }
+    })
+    .catch(error => {
+        console.error('Error posting comment:', error);
+    });
+});
 
             document.getElementById('quiz-form').addEventListener('submit', function(event) {
                 event.preventDefault();
@@ -446,6 +464,22 @@
                 });
             });
         });
+        //confetti
+        window.addEventListener('load', function() {
+        // Suponemos que el valor de progreso está disponible en la variable `progress` de JavaScript
+        let progress = {{ $progress }}; // Laravel Blade pasa el valor de la variable `progress` a JavaScript
+
+        if (progress === 100) {
+            // Lanza el confeti automáticamente
+            confetti({
+                particleCount: 800,
+                spread: 300,
+                origin: { y: 0.6 },
+                colors: ['#ff0a54', '#ff477e', '#ff7096', '#ff85a1', '#fbb1bd'],
+            });
+
+        }
+    });
     </script>
 
     @if(session('success'))

@@ -156,4 +156,22 @@ class ProfileController extends Controller
             return redirect()->route('welcome')->with('error', 'Usuario no encontrado.');
         }
     }
+
+    public function uploadProfilePhoto(Request $request)
+{
+    $request->validate([
+        'profile_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+    $id = Auth::id();
+    $user = User::findOrFail($id);
+
+    if ($request->hasFile('profile_photo')) {
+        $thumbnailPath = $request->file('profile_photo')->store('profile-photos', 'public');
+        $user->profile_photo_path = $thumbnailPath;
+    }
+
+    $user->save();
+
+    return redirect()->back();
+}
 }

@@ -11,9 +11,11 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\CourseApiController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\PaymentController;
 use App\Models\User;
 use GuzzleHttp\Middleware;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated as MiddlewareRedirectIfAuthenticated;
@@ -54,11 +56,20 @@ Route::middleware(['-auth'])->group(function () {
     Route::post('home/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
     Route::post('home/profile/deleteAccount', [ProfileController::class, 'deleteAccount'])->name('delete.account');
     Route::post('home/profile/updatePassword', [ProfileController::class, 'updatePassword'])->name('update.password');
+    Route::post('home/upload-profile-photo', [ProfileController::class, 'uploadProfilePhoto'])->name('upload.profile.photo');
+
+    // Rutas para el pago de la inscripcion
+
+    Route::get('/checkout/{courseId}', [PaymentController::class, 'createCheckoutSession'])->name('checkout');
+    Route::get('/payment/success/{courseId}', [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
 
     // Rutas para inscripciones/compras
 
     Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'enroll'])->name('enrollment');
 
+    //Rutas para certificados
+    Route::get('/generate-certificate/{courseId}', [CertificateController::class, 'generateCertificate']);
     // Rutas para cursos
 
     Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');

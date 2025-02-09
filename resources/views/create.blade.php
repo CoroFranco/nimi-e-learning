@@ -1,24 +1,61 @@
 <x-applayout>
+    @push('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        
+    tinymce.init({
+        skin: 'oxide-dark',
+        content_css: 'dark',
+        menubar: true,
+    
+          selector: 'textarea',
+          plugins: [
+            // Core editing features
+            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+            // Your account includes a free trial of TinyMCE premium features
+            // Try the most popular premium features until Dec 18, 2024:
+            'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown',
+            // Early access to document converters
+            'importword', 'exportword', 'exportpdf'
+          ],
+          toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat | code',
+          tinycomments_mode: 'embedded',
+          tinycomments_author: 'Author name',
+          valid_elements: '*[*]',
+          extended_valid_elements: 'pre,code',
+          mergetags_list: [
+            { value: 'First.Name', title: 'First Name' },
+            { value: 'Email', title: 'Email' },
+          ],
+          ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+        });
+      </script>
+    @endpush
     <div class="flex-grow p-6 md:overflow-y-auto md:p-12 bg-gray-100">
         <div class="max-w-[1200px] mx-auto">
             <h1 class="text-6xl font-bold mb-8 text-gray-800">Crear Nuevo Curso</h1>
             
-            <form id="course-form" action="{{ route('courses.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
+            <form id="course-form" action="{{ route('courses.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
 
-                <div id="alert-container" class="mb-4"></div>
+                <div id="alert-container" class="mb-4 transition-all"></div>
 
                 <!-- Información General del Curso -->
-                <div class="bg-white shadow-md rounded-lg p-6">
-                    <h2 class="text-3xl font-semibold mb-4 text-gray-700">Información General del Curso</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="title" class="block text-lg font-medium text-gray-700 mb-1">Título del Curso</label>
-                            <input type="text" name="title" id="title" required class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]">
+                <div class="bg-gray-100 shadow-sm rounded-lg p-5 hover:bg-gray-50 transition-all group">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-700 flex items-center justify-between">
+                        Información General del Curso
+                        <span class="text-lg text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                            Detalles básicos del curso
+                        </span>
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label for="title" class="block text-lg font-medium text-gray-600">Título del Curso</label>
+                            <input type="text" name="title" id="title" required class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
                         </div>
-                        <div>
-                            <label for="category_id" class="block text-lg font-medium text-gray-700 mb-1">Categoría</label>
-                            <select name="category_id" id="category_id" required class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]">
+                        <div class="space-y-2">
+                            <label for="category_id" class="block text-lg font-medium text-gray-600">Categoría</label>
+                            <select name="category_id" id="category_id" required class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
                                 <option value="">Selecciona una categoría</option>
                                 @foreach($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -26,31 +63,36 @@
                             </select>
                         </div>
                     </div>
-                    <div class="mt-4">
-                        <label for="description" class="block text-lg font-medium text-gray-700 mb-1">Descripción del Curso</label>
-                        <textarea name="description" id="description" rows="4" class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]"></textarea>
+                    <div class="mt-4 space-y-2">
+                        <label for="description" class="block text-lg font-medium text-gray-600">Descripción del Curso</label>
+                        <textarea name="description" id="description" rows="4" class="text-lg rich-text-editor w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"></textarea>
                     </div>
                 </div>
                 
-                <!-- Detalles del Curso -->
-                <div class="bg-white shadow-md rounded-lg p-6">
-                    <h2 class="text-3xl font-semibold mb-4 text-gray-700">Detalles del Curso</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div>
-                            <label for="price" class="block text-lg font-medium text-gray-700 mb-1">Precio (USD)</label>
-                            <input type="number" name="price" id="price" step="0.01" min="0" required class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]">
+                <!-- Detalles del Curso - Compacted Design -->
+                <div class="bg-gray-100 shadow-sm rounded-lg p-5 hover:bg-gray-50 transition-all group">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-700 flex items-center justify-between">
+                        Detalles del Curso
+                        <span class="text-lg text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                            Configuración del curso
+                        </span>
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="space-y-2">
+                            <label for="price" class="block text-lg font-medium text-gray-600">Precio (USD)</label>
+                            <input type="number" name="price" id="price" step="0.01" min="0" required class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
                         </div>
-                        <div>
-                            <label for="level" class="block text-lg font-medium text-gray-700 mb-1">Nivel</label>
-                            <select name="level" id="level" required class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]">
+                        <div class="space-y-2">
+                            <label for="level" class="block text-lg font-medium text-gray-600">Nivel</label>
+                            <select name="level" id="level" required class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
                                 <option value="beginner">Principiante</option>
                                 <option value="intermediate">Intermedio</option>
                                 <option value="advanced">Avanzado</option>
                             </select>
                         </div>
-                        <div>
-                            <label for="status" class="block text-lg font-medium text-gray-700 mb-1">Estado</label>
-                            <select name="status" id="status" required class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]">
+                        <div class="space-y-2">
+                            <label for="status" class="block text-lg font-medium text-gray-600">Estado</label>
+                            <select name="status" id="status" required class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
                                 <option value="draft">Borrador</option>
                                 <option value="published">Publicado</option>
                                 <option value="archived">Archivado</option>
@@ -59,15 +101,24 @@
                     </div>
                 </div>
                 
-                <!-- Imagen de Portada -->
-                <div class="bg-white shadow-md rounded-lg p-6">
-                    <h2 class="text-4xl font-semibold mb-4 text-gray-700">Imagen de Portada</h2>
-                    <div id="drop-zone" class="mt-2 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-[var(--highlight-color)] transition-colors">
-                        <p class="text-lg text-gray-500 mb-2">Arrastra y suelta una imagen aquí o haz clic para seleccionar</p>
-                        <input type="file" name="thumbnail" id="thumbnail" accept="image/*" class="text-lg hidden">
-                        <button type="button" id="select-file" class="text-xl px-4 py-2 bg-[var(--highlight-color)] text-white rounded-md hover:bg-[var(--hover-color)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--highlight-color)]">
-                            Seleccionar Archivo
-                        </button>
+                <!-- Imagen de Portada - Drag and Drop with Enhanced UI -->
+                <div class="bg-gray-100 shadow-sm rounded-lg p-5 hover:bg-gray-50 transition-all group">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-700 flex items-center justify-between">
+                        Imagen de Portada
+                        <span class="text-lg text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                            Vista previa de la miniatura
+                        </span>
+                    </h2>
+                    <div id="drop-zone" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition-all group">
+                        <div class="space-y-3">
+                            <p class="text-lg text-gray-500 group-hover:text-blue-600 transition-colors">
+                                Arrastra y suelta una imagen o haz clic para seleccionar
+                            </p>
+                            <input type="file" name="thumbnail" id="thumbnail" accept="image/*" class="hidden">
+                            <button type="button" id="select-file" class="text-2xl px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                                Seleccionar Archivo
+                            </button>
+                        </div>
                     </div>
                     <div id="thumbnail-preview" class="mt-4 hidden">
                         <img id="thumbnail-image" src="#" alt="Vista previa de la imagen" class="max-w-full h-auto rounded-lg shadow-md">
@@ -80,7 +131,7 @@
                     <div id="modules-container" class="space-y-6">
                         <!-- Los módulos se agregarán dinámicamente aquí -->
                     </div>
-                    <button type="button" id="add-module" class="text-xl mt-6 px-4 py-2 bg-[var(--highlight-color)] text-white rounded-md hover:bg-[var(--hover-color)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--highlight-color)]">
+                    <button type="button" id="add-module" class="text-2xl mt-6 px-4 py-2 bg-[var(--highlight-color)] text-white rounded-md hover:bg-[var(--hover-color)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--highlight-color)]">
                         Agregar Módulo
                     </button>
                 </div>
@@ -103,91 +154,258 @@
             submitForm();
         });
 
-        // Funcionalidad de arrastrar y soltar para la imagen de portada
-        const dropZone = document.getElementById('drop-zone');
-        const thumbnailInput = document.getElementById('thumbnail');
-        const selectFileButton = document.getElementById('select-file');
-        const thumbnailPreview = document.getElementById('thumbnail-preview');
-        const thumbnailImage = document.getElementById('thumbnail-image');
+        // Thumbnail preview functionality
+const thumbnailInput = document.getElementById('thumbnail');
+const dropZone = document.getElementById('drop-zone');
+const thumbnailPreview = document.getElementById('thumbnail-preview');
+const thumbnailImage = document.getElementById('thumbnail-image');
 
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('border-[var(--highlight-color)]', 'bg-[var(--highlight-color)]/10');
-        });
+// Make entire drop zone clickable
+dropZone.addEventListener('click', () => {
+    thumbnailInput.click();
+});
 
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('border-[var(--highlight-color)]', 'bg-[var(--highlight-color)]/10');
-        });
+// Drag and drop functionality
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+});
 
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('border-[var(--highlight-color)]', 'bg-[var(--highlight-color)]/10');
-            const file = e.dataTransfer.files[0];
-            handleFile(file);
-        });
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
 
-        selectFileButton.addEventListener('click', () => {
-            thumbnailInput.click();
-        });
+['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, highlight, false);
+});
 
-        thumbnailInput.addEventListener('change', () => {
-            const file = thumbnailInput.files[0];
-            handleFile(file);
-        });
+['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, unhighlight, false);
+});
 
-        function handleFile(file) {
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    thumbnailImage.src = e.target.result;
-                    thumbnailPreview.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            } else {
-                alert('Por favor, selecciona un archivo de imagen válido.');
-            }
+function highlight() {
+    dropZone.classList.add('border-blue-500');
+}
+
+function unhighlight() {
+    dropZone.classList.remove('border-blue-500');
+}
+
+// Handle file selection
+thumbnailInput.addEventListener('change', handleFiles);
+dropZone.addEventListener('drop', handleDrop);
+
+function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    handleFiles(files);
+}
+
+function handleFiles(files) {
+    const file = files instanceof FileList ? files[0] : files.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            thumbnailImage.src = e.target.result;
+            thumbnailPreview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+        document.addEventListener('DOMContentLoaded', () => {
+    // Add global expand/collapse button
+    const modulesContainer = document.getElementById('modules-container');
+    const globalToggleButton = document.createElement('button');
+    globalToggleButton.type = 'button';
+    globalToggleButton.className = 'text-xl mb-4 px-4 py-2 bg-[var(--highlight-color)] text-white rounded-md hover:bg-[var(--hover-color)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--highlight-color)]';
+    globalToggleButton.textContent = 'Expandir/Contraer Todos los Módulos';
+    globalToggleButton.addEventListener('click', toggleAllModules);
+    
+    // Insert the button before the modules container
+    modulesContainer.parentNode.insertBefore(globalToggleButton, modulesContainer);
+
+    // Modify addModule function to include collapse/expand functionality
+    const originalAddModule = window.addModule;
+    window.addModule = function() {
+        // Call the original addModule function
+        originalAddModule();
+        
+        // Get the last added module
+        const modules = document.querySelectorAll('.module');
+        const latestModule = modules[modules.length - 1];
+        
+        // Add collapse/expand functionality to the latest module
+        addModuleCollapseHeaders(latestModule);
+    };
+
+    // Initial setup of existing modules
+    document.querySelectorAll('.module').forEach(addModuleCollapseHeaders);
+});
+
+function addModuleCollapseHeaders(moduleElement) {
+    const moduleHeader = moduleElement.querySelector('h3');
+    
+    // Modify the header to be interactive
+    moduleHeader.classList.add('cursor-pointer', 'flex', 'items-center', 'justify-between', 'hover:bg-gray-200', 'transition-colors', 'duration-200', 'rounded-md', 'p-2', '-ml-2');
+    
+    const toggleButton = document.createElement('button');
+    toggleButton.type = 'button';
+    toggleButton.className = 'transition-transform duration-300 ease-in-out transform hover:scale-110';
+    toggleButton.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 hover:text-gray-900 chevron-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path class="origin-center transition-transform duration-300 ease-in-out" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+    `;
+    toggleButton.setAttribute('aria-expanded', 'true');
+    
+    // Function to toggle module
+    const toggleModule = () => {
+        const moduleContent = moduleElement.querySelector('.module-content');
+        const svgPath = toggleButton.querySelector('path');
+        const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
+        
+        if (isExpanded) {
+            // Collapse
+            gsap.to(moduleContent, {
+                height: 0,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    moduleContent.classList.add('hidden');
+                    svgPath.classList.add('rotate-180');
+                }
+            });
+            toggleButton.setAttribute('aria-expanded', 'false');
+        } else {
+            // Expand
+            moduleContent.classList.remove('hidden');
+            gsap.fromTo(moduleContent, 
+                { height: 0, opacity: 0 },
+                {
+                    height: 'auto',
+                    opacity: 1,
+                    duration: 0.8,
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                        svgPath.classList.remove('rotate-180');
+                    }
+                }
+            );
+            toggleButton.setAttribute('aria-expanded', 'true');
         }
+    };
+    
+    // Add click event to the entire header
+    moduleHeader.addEventListener('click', toggleModule);
+    
+    // Append the toggle button to the header
+    moduleHeader.appendChild(toggleButton);
+}
 
-        function addModule() {
-            moduleCount++;
-            const moduleHtml = `
-                <div id="module-${moduleCount}" class="module bg-gray-100 rounded-lg p-6 mb-4 relative">
-                    <button type="button" class="text-lg absolute top-2 right-2 text-red-500 hover:text-red-700" onclick="removeModule(${moduleCount})">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                    <h3 class="text-2xl font-semibold mb-4 text-gray-700">Módulo ${moduleCount}</h3>
-                    <div>
-                        <label class="block text-lg font-medium text-gray-700 mb-1">Título del Módulo</label>
-                        <input type="text" name="modules[${moduleCount}][title]" required class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]">
-                    </div>
-                    <div class="mt-4">
-                        <label class="block text-lg font-medium text-gray-700 mb-1">Descripción del Módulo</label>
-                        <textarea name="modules[${moduleCount}][description]" rows="3" class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]"></textarea>
-                    </div>
-                    <div class="mt-4">
-                        <h4 class="text-2xl font-medium mb-2 text-gray-700">Lecciones</h4>
-                        <div id="lessons-container-${moduleCount}" class="space-y-4">
-                            <!-- Las lecciones se agregarán dinámicamente aquí -->
-                        </div>
-                        <button type="button" class="text-xl mt-4 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onclick="addLesson(${moduleCount})">
-                            Agregar Lección
-                        </button>
-                    </div>
+function toggleAllModules() {
+    const modules = document.querySelectorAll('.module');
+    const firstModuleToggleButton = modules[0]?.querySelector('h3 button');
+    
+    if (!firstModuleToggleButton) return;
+    
+    const isCurrentlyExpanded = firstModuleToggleButton.getAttribute('aria-expanded') === 'true';
+    
+    modules.forEach(moduleElement => {
+        const moduleContent = moduleElement.querySelector('.module-content');
+        const toggleButton = moduleElement.querySelector('h3 button');
+        const svgPath = toggleButton.querySelector('path');
+        
+        if (isCurrentlyExpanded) {
+            // Collapse with animation
+            gsap.to(moduleContent, {
+                height: 0,
+                opacity: 0,
+                duration: 1,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    moduleContent.classList.add('hidden');
+                    svgPath.style.transform = 'rotate(180deg)';
+                }
+            });
+            toggleButton.setAttribute('aria-expanded', 'false');
+        } else {
+            // Expand with animation
+            moduleContent.classList.remove('hidden');
+            gsap.fromTo(moduleContent, 
+                { height: 0, opacity: 0 },
+                {
+                    height: 'auto',
+                    opacity: 1,
+                    duration: 1,
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                        svgPath.style.transform = 'rotate(0deg)';
+                    }
+                }
+            );
+            toggleButton.setAttribute('aria-expanded', 'true');
+        }
+    });
+}
+
+// Modify the addModule function to wrap existing content in .module-content
+function addModule() {
+    moduleCount++;
+    const moduleHtml = `
+        <div id="module-${moduleCount}" class="module bg-gray-100 rounded-lg p-6 mb-4 relative opacity-0 scale-95">
+            <button type="button" class="text-xl absolute top-2 right-2 text-red-500 hover:text-red-700" onclick="removeModule(${moduleCount})">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <h3 class="text-2xl font-semibold mb-4 text-gray-700">Módulo ${moduleCount}</h3>
+            <div class="module-content">
+                <div>
+                    <label class="block text-lg font-medium text-gray-700 mb-1">Título del Módulo</label>
+                    <input type="text" name="modules[${moduleCount}][title]" required class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]">
                 </div>
-            `;
-            document.getElementById('modules-container').insertAdjacentHTML('beforeend', moduleHtml);
-        }
+                <div class="mt-4">
+                    <label class="block text-lg font-medium text-gray-700 mb-1">Descripción del Módulo</label>
+                    <textarea name="modules[${moduleCount}][description]" rows="3" class="rich-text-editor text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]"></textarea>
+                </div>
+                <div class="mt-4">
+                    <h4 class="text-4xl font-medium mb-2 text-gray-700">Lecciones</h4>
+                    <div id="lessons-container-${moduleCount}" class="space-y-4">
+                        <!-- Las lecciones se agregarán dinámicamente aquí -->
+                    </div>
+                    <button type="button" class="text-xl mt-4 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onclick="addLesson(${moduleCount})">
+                        Agregar Lección
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.getElementById('modules-container').insertAdjacentHTML('beforeend', moduleHtml);
+    
+    // Add GSAP animation for module
+    const newModule = document.getElementById(`module-${moduleCount}`);
+    gsap.to(newModule, {
+        opacity: 1,
+        scale: 1,
+        duration: 1,
+        ease: "power2.out"
+    });
+    
+    // Add collapse/expand functionality to the new module
+    addModuleCollapseHeaders(newModule);
+}
 
         function removeModule(moduleId) {
             document.getElementById(`module-${moduleId}`).remove();
         }
 
         function addLesson(moduleId) {
-            const lessonCount = document.querySelectorAll(`#lessons-container-${moduleId} .lesson`).length + 1;
-            const lessonHtml = `
-                <div class="lesson bg-white rounded-lg p-4 relative">
+    const lessonsContainer = document.getElementById(`lessons-container-${moduleId}`);
+    const lessonCount = lessonsContainer.children.length + 1;
+    const lessonHtml = `
+        <div class="lesson bg-white rounded-lg p-4 relative opacity-0 scale-95">
                     <button type="button" class="text-xl absolute top-2 right-2 text-red-500 hover:text-red-700" onclick="this.closest('.lesson').remove()">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -208,16 +426,33 @@
                     </div>
                     <div class="mt-2">
                         <label class="block text-lg font-medium text-gray-700 mb-1">Descripción</label>
-                        <textarea name="modules[${moduleId}][lessons][${lessonCount}][description]" rows="2" class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]"></textarea>
+                        <textarea name="modules[${moduleId}][lessons][${lessonCount}][description]" rows="2" class="rich-text-editor text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]"></textarea>
                     </div>
                     <div class="mt-2 content-field" id="content-field-${moduleId}-${lessonCount}">
                         <!-- El campo de contenido se mostrará aquí según el tipo seleccionado -->
                     </div>
                 </div>
             `;
-            document.getElementById(`lessons-container-${moduleId}`).insertAdjacentHTML('beforeend', lessonHtml);
-            showContentField(document.querySelector(`#lessons-container-${moduleId} .lesson:last-child select`), moduleId, lessonCount);
-        }
+            lessonsContainer.insertAdjacentHTML('beforeend', lessonHtml);
+    
+    // Add GSAP animation for lesson
+    const newLesson = lessonsContainer.lastElementChild;
+    gsap.to(newLesson, {
+        opacity: 1,
+        scale: 1,
+        duration: 1,
+        ease: "power2.out"
+    });
+    
+    tinymce.init({
+        skin: 'oxide-dark',
+        content_css: 'dark',
+        menubar: true,
+        selector: `#lessons-container-${moduleId} .lesson:last-child .rich-text-editor`
+    });
+    
+    showContentField(document.querySelector(`#lessons-container-${moduleId} .lesson:last-child select`), moduleId, lessonCount);
+}
 
         function showContentField(select, moduleId, lessonId) {
             const contentField = document.getElementById(`content-field-${moduleId}-${lessonId}`);
@@ -236,7 +471,7 @@
                 case 'text':
                     fieldHtml = `
                         <label class="block text-lg font-medium text-gray-700 mb-1">Contenido de Texto</label>
-                        <textarea name="modules[${moduleId}][lessons][${lessonId}][content]" rows="6" class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]"></textarea>
+                        <textarea name="modules[${moduleId}][lessons][${lessonId}][content]" rows="6" class="rich-text-editor text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]"></textarea>
                     `;
                     break;
                 case 'quiz':
@@ -252,7 +487,14 @@
             }
 
             contentField.innerHTML = fieldHtml;
-            if (lessonType === 'quiz') {
+            if (lessonType === 'text') {
+                
+    tinymce.init({
+        skin: 'oxide-dark',
+        content_css: 'dark',
+        menubar: true,
+    selector: `#content-field-${moduleId}-${lessonId} .rich-text-editor`});
+            } else if (lessonType === 'quiz') {
                 addQuizQuestion(moduleId, lessonId);
             }
         }
@@ -271,6 +513,8 @@
         }
 
         function submitForm() {
+            tinymce.triggerSave();
+
             const form = document.getElementById('course-form');
             const formData = new FormData(form);
 
@@ -327,11 +571,9 @@
                 return;
             }
 
-            // Eliminar mensajes de error anteriores
             document.querySelectorAll('.error-message').forEach(el => el.remove());
             document.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border-red-500'));
 
-            // Mostrar nuevos mensajes de error
             for (const [key, messages] of Object.entries(errors)) {
                 const field = document.querySelector(`[name="${key}"]`);
                 if (field) {
@@ -343,7 +585,6 @@
                 }
             }
 
-            // Desplazarse al primer error
             const firstError = document.querySelector('.border-red-500');
             if (firstError) {
                 firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });

@@ -165,51 +165,62 @@ public function completeLesson(Request $request, Course $course, Lesson $lesson)
     // METODOS PARA LOS COMENTARIOS
 
     public function addComment(Request $request, Course $course, Lesson $lesson)
+    {
+        $request->validate([
+            'content' => 'required|string|max:1000',
+        ]);
+    
+        $comment = new Comment([
+            'content' => $request->content,
+            'user_id' => Auth::id(),
+            'commentable_id' => $lesson->id,
+            'commentable_type' => Lesson::class,
+        ]);
+    
+        $lesson->comments()->save($comment);
+    
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'comment' => $comment->load('user')]);
+        }
+    
+        return back();
+    }
+    
+    public function deleteComment(Request $request, Course $course, Lesson $lesson, Comment $comment)
 {
-    $request->validate([
-        'content' => 'required|string|max:1000',
-    ]);
-
-    $comment = new Comment([
-        'content' => $request->content,
-        'user_id' => Auth::id(),
-        'commentable_id' => $lesson->id,
-        'commentable_type' => Lesson::class,
-    ]);
-
-    $lesson->comments()->save($comment);
-
-    if ($request->expectsJson()) {
-        return response()->json(['success' => true, 'comment' => $comment->load('user')]);
+    // Ensure the user is authorized to delete their own comment
+    if (Auth::id() !== $comment->user_id) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Unauthorized'
+        ], 403);
     }
 
-    return back();
+    try {
+        $comment->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Comment deleted successfully'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error deleting comment'
+        ], 500);
+    }
 }
-
-public function deleteComment(Request $request, Course $course, Lesson $lesson, Comment $comment)
-{
-    $this->authorize('delete', $comment);
-
-    $comment->delete();
-
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Comentario Eliminado',
-        'redirect' => route('courses.lesson', [$course, 'lesson' => $lesson->id])
-    ]);
-
-}
-
-public function getComments(Course $course, Lesson $lesson, Request $request)
-{
-    $comments = $lesson->comments()->with('user')->paginate(10);
-
-    return response()->json([
-        'comments' => $comments->items(),
-        'hasMore' => $comments->hasMorePages(),
-    ]);
-}
+    
+    public function getComments(Course $course, Lesson $lesson, Request $request)
+    {
+        $comments = $lesson->comments()->with('user')->paginate(10);
+    
+        return response()->json([
+            'comments' => $comments->items(),
+            'hasMore' => $comments->hasMorePages(),
+        ]);
+    }
+    
 
 
 

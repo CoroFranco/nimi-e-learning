@@ -1,25 +1,28 @@
 <x-appLayout>
 
-    <main class="flex-grow p-6 md:p-8 bg-[var(--bg-color)]">
+    <main class="flex-grow p-6 md:p-8 bg-gradient-to-br from-[var(--background-main)] to-[var(--card-bg)]">
         <div class="container">
             <!-- Encabezado del perfil -->
             <div class="bg-gradient-to-r from-[var(--main-color)] to-[var(--hover-color)] rounded-lg shadow-lg p-6 mb-8">
                 <div class="flex flex-col md:flex-row  items-center">
                     <div class="relative mb-4 md:mb-0 md:mr-20 ">
                         @if(Auth::user()->profile_photo_path)
-                            <img src="{{ Auth::user()->profile_photo_path }}" alt="Foto de perfil" class="w-32 h-32 rounded-full object-cover border-4 border-white">
+                            <img src="/storage/{{ Auth::user()->profile_photo_path }}" alt="Foto de perfil" class="w-40 h-40 rounded-full object-cover border-4 border-white">
                         @else
                             <div class="w-32 h-32 rounded-full bg-white flex items-center justify-center text-[var(--hover-color)] text-4xl font-bold">
                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                             </div>
                         @endif
-                        <label for="profile-photo" class="absolute bottom-0 right-0 bg-white text-[var(--hover-color)] p-2 rounded-full cursor-pointer hover:bg-indigo-100 transition duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </label>
-                        <input type="file" id="profile-photo" class="hidden" accept="image/*">
+                        <form id="profile-photo-form" method="POST" action="{{ route('upload.profile.photo') }}" enctype="multipart/form-data">
+                            @csrf
+                            <label for="profile-photo" class="absolute bottom-0 right-0 bg-white text-[var(--hover-color)] p-2 rounded-full cursor-pointer hover:bg-indigo-100 transition duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </label>
+                            <input type="file" id="profile-photo" name="profile_photo" class="hidden" accept="image/*" onchange="document.getElementById('profile-photo-form').submit()">
+                        </form>
                     </div>
                     <div class="text-center md:text-left flex-grow">
                         <h1 class="text-[2.6 rem] font-bold text-white mb-2">{{ Auth::user()->name }}</h1>
@@ -101,7 +104,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         
                         @foreach($courses as $course) 
-                            <div class="bg-white p-4 rounded-lg shadow-md">
+                            <div class="bg-white p-4 py-8 rounded-lg shadow-md">
                                 @php
                                     // Obtener la siguiente lección después de omitir las completadas
                                     $nextLesson = $lessonsByCourse[$course->id]
@@ -111,7 +114,7 @@
                                 @endphp
 
                                 <a href="/courses/{{$course->id}}/lessons/{{$nextLesson ? $nextLesson->id : $lessonsByCourse[$course->id]->last()->id}}">
-                                    <h3 class="font-bold text-lg text-[var(--hover-color)] mb-2">{{$course->title}}</h3>
+                                    <h3 class="font-bold text-3xl text-[var(--hover-color)] mb-2">{{$course->title}}</h3>
                                 </a>                                
                               <div class="flex justify-between items-center mb-2">
                                     <span class="text-gray-600">Progreso: {{$courseProgress[$course->id]}}%</span>
@@ -133,7 +136,7 @@
                     <h2 class="text-2xl font-bold text-gray-800 mb-4">Mis cursos creados</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="bg-white p-4 rounded-lg shadow-md">
-                            <h3 class="font-bold text-lg text-[var(--hover-color)] mb-2">Fundamentos de JavaScript</h3>
+                            <h3 class="font-bold text-2xl text-[var(--hover-color)] mb-2">Fundamentos de JavaScript</h3>
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-gray-600">Estudiantes: 150</span>
                                 <span class="text-[var(--hover-color)]">Calificación: 4.8</span>
@@ -141,7 +144,7 @@
                             <button class="mt-2 bg-[var(--hover-color)] text-white px-4 py-2 rounded-md hover:bg-[var(--hover-color)] transition duration-300">Editar curso</button>
                         </div>
                         <div class="bg-white p-4 rounded-lg shadow-md">
-                            <h3 class="font-bold text-lg text-[var(--hover-color)] mb-2">Desarrollo Web Responsivo</h3>
+                            <h3 class="font-bold text-2xl text-[var(--hover-color)] mb-2">Desarrollo Web Responsivo</h3>
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-gray-600">Estudiantes: 120</span>
                                 <span class="text-[var(--hover-color)]">Calificación: 4.7</span>
@@ -157,7 +160,7 @@
                     <h2 class="text-2xl font-bold text-gray-800 mb-4">Mis compras</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="bg-white p-4 rounded-lg shadow-md">
-                            <h3 class="font-bold text-lg text-[var(--hover-color)] mb-2">Curso Avanzado de Python</h3>
+                            <h3 class="font-bold text-2xl text-[var(--hover-color)] mb-2">Curso Avanzado de Python</h3>
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-gray-600">Comprado el: 15/04/2024</span>
                                 <span class="text-[var(--hover-color)]">$49.99</span>
@@ -165,7 +168,7 @@
                             <button class="mt-2 bg-[var(--hover-color)] text-white px-4 py-2 rounded-md hover:bg-[var(--hover-color)] transition duration-300">Ver curso</button>
                         </div>
                         <div class="bg-white p-4 rounded-lg shadow-md">
-                            <h3 class="font-bold text-lg text-[var(--hover-color)] mb-2">Marketing Digital para Principiantes</h3>
+                            <h3 class="font-bold text-2xl text-[var(--hover-color)] mb-2">Marketing Digital para Principiantes</h3>
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-gray-600">Comprado el: 02/03/2024</span>
                                 <span class="text-[var(--hover-color)]">$39.99</span>
@@ -235,12 +238,12 @@
                                 </p>
                             </div>
                             <div class=" px-4 py-4 flex justify-center md:flex-row gap-2 md:gap-10 flex-col place-items-center">
-                                <button id="cancelDelete" class="px-6 py-3 bg-gray-500 text-white text-lg md:text-xl font-medium rounded-md w-full md:w-auto mb-3 md:mb-0 ">
+                                <button id="cancelDelete" class="px-6 py-3 bg-gray-500 text-white text-2xl md:text-xl font-medium rounded-md w-full md:w-auto mb-3 md:mb-0 ">
                                     Cancelar
                                 </button>
                                 <form class="w-full md:w-auto" method="post" action="{{route('delete.account')}}">
                                     @csrf
-                                    <button id="confirmDelete" class="px-6 py-3 bg-red-500 text-white text-lg md:text-xl font-medium rounded-md w-full md:w-auto mb-3 md:mb-0 ">
+                                    <button id="confirmDelete" class="px-6 py-3 bg-red-500 text-white text-2xl md:text-xl font-medium rounded-md w-full md:w-auto mb-3 md:mb-0 ">
                                         Eliminar
                                     </button>
                                 </form>

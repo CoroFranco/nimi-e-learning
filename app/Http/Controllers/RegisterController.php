@@ -33,7 +33,7 @@ class RegisterController extends Controller
                 'password' => Hash::make($validated['password']),
                 'bio' => $request->input('bio', ''),
                 'profile_photo_path' => $request->input('profile_photo_path', ''),
-                'role' => 'user', 
+                'role' => 'student', 
             ]);
 
             if ($request->expectsJson()) {

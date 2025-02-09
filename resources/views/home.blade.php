@@ -1,5 +1,18 @@
 <x-applayout>
-    <main class="flex-1 overflow-hidden bg-[var(--background-main)]">
+    <style>
+        .floating-image {
+    box-shadow: 0 1px 20px rgba(0, 0, 0, 0.5); /* Agrega la sombra */
+    position: relative; /* Asegúrate de que se posicionen correctamente */
+    z-index: 1; /* Garantiza que la imagen esté encima de la sombra */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+    </style>
+    @push('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    @endpush
+    <main class="flex-1 overflow-hidden bg-gradient-to-br from-[var(--background-main)] to-[var(--card-bg)]">
         <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="flex flex-col lg:flex-row items-center mb-16">
                 <div class="lg:w-1/2 lg:pr-12 mb-8 lg:mb-0">
@@ -22,10 +35,18 @@
                 </div>
                 <div class="lg:w-1/2">
                     <div class="grid grid-cols-2 gap-4">
-                        <img src="https://via.placeholder.com/300x200" alt="Curso 1" class="rounded-lg shadow-md">
-                        <img src="https://via.placeholder.com/300x200" alt="Curso 2" class="rounded-lg shadow-md mt-8">
-                        <img src="https://via.placeholder.com/300x200" alt="Curso 3" class="rounded-lg shadow-md">
-                        <img src="https://via.placeholder.com/300x200" alt="Curso 4" class="rounded-lg shadow-md mt-8">
+                        <div class="image-container" data-image-index="0">
+                            <img src="/img/dev.jpeg" alt="Curso 1" class="floating-image max-h-[200px] rounded-lg shadow-md">
+                        </div>
+                        <div class="image-container" data-image-index="1">
+                            <img src="/img/food.png" alt="Curso 2" class="floating-image max-h-[200px] rounded-lg shadow-md mt-8">
+                        </div>
+                        <div class="image-container" data-image-index="2">
+                            <img src="/img/photograpy.jpeg" alt="Curso 3" class="floating-image max-h-[200px] rounded-lg shadow-md">
+                        </div>
+                        <div class="image-container" data-image-index="3">
+                            <img src="/img/music.jpeg" alt="Curso 4" class="floating-image rounded-lg shadow-md mt-8">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -45,7 +66,7 @@
                 <div class="max-w-3xl mx-auto text-center">
                     <h2 class="text-4xl font-bold text-gray-900 mb-4">Comparte tu Pasión</h2>
                     <p class="text-gray-600 mb-6 text-2xl">En Nimi, creemos que todos tienen algo valioso que enseñar. ¿Listo para compartir tu conocimiento?</p>
-                    <a href="{{$instructorRoute}}" class="inline-block bg-[var(--highlight-color)] text-white font-semibold py-3 px-8 rounded-md hover:bg-[var(--hover-color)] transition duration-300">
+                    <a href="{{$instructorRoute}}" class="text-xl inline-block bg-[var(--highlight-color)] text-white font-semibold py-3 px-8 rounded-md hover:bg-[var(--hover-color)] transition duration-300">
                         Crea tu Primer Curso
                     </a>
                 </div>
@@ -54,6 +75,7 @@
             <div class="mb-16">
                 <h2 class="text-3xl font-bold text-gray-900 mb-6">Cursos Destacados</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                @if ($randomCourses)  
                     @foreach($randomCourses as $course)
                         <div class="bg-white rounded-lg shadow-md overflow-hidden transition duration-300 hover:shadow-xl">
                             <img src="storage/{{$course->thumbnail_path}}" alt="Curso" class="w-full h-48 object-cover">
@@ -67,6 +89,8 @@
                             </div>
                         </div>
                     @endforeach
+                    @else
+                    @endif
                 </div>
             </div>
 
@@ -110,4 +134,49 @@
             </div>
         </div>
     </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const imageContainers = document.querySelectorAll('.image-container');
+            const maxRotation = 15; // Increased rotation angle
+
+            imageContainers.forEach(container => {
+                const image = container.querySelector('.floating-image');
+                
+                container.addEventListener('mousemove', (e) => {
+                    const rect = container.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    
+                    const mouseX = e.clientX;
+                    const mouseY = e.clientY;
+                    
+                    // Increased rotation and more dramatic effect
+                    const angleX = ((mouseY - centerY) / (rect.height / 2)) * maxRotation;
+                    const angleY = -((mouseX - centerX) / (rect.width / 2)) * maxRotation;
+                    
+                    gsap.to(image, {
+                        rotationX: angleX,
+                        rotationY: angleY,
+                        scale: 1, // Slightly increased scale
+                        translateX: (mouseX - centerX) / 20, // Added horizontal movement
+                        translateY: (mouseY - centerY) / 20, // Added vertical movement
+                        duration: 0.7,
+                        ease: 'power1.out'
+                    });
+                });
+                
+                container.addEventListener('mouseleave', () => {
+                    gsap.to(image, {
+                        rotationX: 0,
+                        rotationY: 0,
+                        scale: 1,
+                        translateX: 0,
+                        translateY: 0,
+                        duration: 0.7,
+                        ease: 'power1.out'
+                    });
+                });
+            });
+        });
+    </script>
 </x-appLayout>
