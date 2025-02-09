@@ -1,4 +1,4 @@
-<x-appLayout>
+<x-app-layout>
     
     <main class="w-full p-6 md:p-8 lg:p-12 bg-gradient-to-br from-[var(--background-main)] to-[var(--card-bg)]">
         <div class="max-w-[1400px] m-auto">
@@ -241,4 +241,4 @@
         fetchCourses(); // Initial fetch
     });
     </script>
-</x-appLayout>
+</x-app-layout>

@@ -1,4 +1,4 @@
-<x-appLayout>
+<x-app-layout>
     <div class="min-h-screen w-full bg-gradient-to-br from-indigo-50 to-blue-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div class="bg-white shadow-2xl rounded-3xl overflow-hidden">
@@ -203,4 +203,4 @@
         });     
                 
     </script>
-</x-appLayout>
+</x-app-layout>

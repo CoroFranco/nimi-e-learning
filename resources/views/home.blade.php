@@ -1,4 +1,4 @@
-<x-applayout>
+<x-app-layout>
     <style>
         .floating-image {
     box-shadow: 0 1px 20px rgba(0, 0, 0, 0.5); /* Agrega la sombra */
@@ -179,4 +179,4 @@
             });
         });
     </script>
-</x-appLayout>
+</x-app-layout>

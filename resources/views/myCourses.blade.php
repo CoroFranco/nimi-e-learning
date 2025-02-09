@@ -1,4 +1,4 @@
-<x-appLayout>
+<x-app-layout>
     <div class="bg-[var(--background-main)] w-full">
         <div class="container mx-auto px-4 py-8 ">
             <h1 class="text-4xl font-bold text-gray-800 mb-6">Mis Cursos</h1>
@@ -82,4 +82,4 @@
             }
         }
     </script>
-</x-appLayout>
+</x-app-layout>

@@ -1,4 +1,4 @@
-<x-appLayout>
+<x-app-layout>
     <div class="py-12 w-full">
         <div class="max-w-[900px] w-[95%] mx-auto sm:px-6 lg:px-8">
             <h1 class="text-5xl font-bold mb-8">Solicitudes de Instructores</h1>
@@ -216,4 +216,4 @@
         });
     }
     </script>
-</x-appLayout>
+</x-app-layout>

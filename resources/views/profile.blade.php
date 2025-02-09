@@ -1,4 +1,4 @@
-<x-appLayout>
+<x-app-layout>
 
     <main class="flex-grow p-6 md:p-8 bg-gradient-to-br from-[var(--background-main)] to-[var(--card-bg)]">
         <div class="container">
@@ -260,4 +260,4 @@
             
         </script>
     </main>
-</x-appLayout>
+</x-app-layout>

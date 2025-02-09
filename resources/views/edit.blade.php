@@ -1,4 +1,4 @@
-<x-appLayout>
+<x-app-layout>
     @push('scripts')
     <script src="https://cdn.tiny.cloud/1/lmgieupkixx4xa232zm63l0qvg7ece6egpx8eynnfck5v8fg/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
@@ -685,4 +685,4 @@ function addModule() {
             }
         }
     </script>
-</x-appLayout>
+</x-app-layout>

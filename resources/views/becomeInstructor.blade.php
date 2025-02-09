@@ -1,4 +1,4 @@
-<x-appLayout>
+<x-app-layout>
     <main class="flex-grow p-8 md:p-12 lg:p-16 bg-gradient-to-br from-white to-gray-100">
         <div class="max-w-5xl mx-auto">
             <h1 class="text-5xl font-bold mb-12 text-[var(--text-color)] text-center">Conviértete en Instructor</h1>
@@ -73,4 +73,4 @@
             </div>
         </div>
     </main>
-</x-appLayout>
+</x-app-layout>
