@@ -8,5 +8,9 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        strictPort: true,
+        https: true, // Asegura que se use HTTPS
+    },
     base: '/', // Asegura que Vite use rutas relativas
 });
