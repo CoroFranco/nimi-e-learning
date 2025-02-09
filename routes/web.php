@@ -31,11 +31,10 @@ Route::get('/', [IndexController::class, 'main'])->name('welcome')->middleware('
 
 Route::post('/register', [RegisterController::class, 'register'])->name('register');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
-Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 
 
-Route::get('/explorer', [NavController::class, 'explorer'])->name('explorer');
-Route::get('/explorer/search', [NavController::class, 'search'])->name('api.courses.search');
+
+
 
 Route::middleware(['-redirectInstructor'])->group(function(){
     Route::get('/become-instructor', [InstructorController::class, 'showApplicationForm'])->name('become.instructor.form');
@@ -50,7 +49,9 @@ Route::middleware(['-authInstructor'])->group(function () {
 
 
 Route::middleware(['-auth'])->group(function () {
-
+    Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
+    Route::get('/explorer', [NavController::class, 'explorer'])->name('explorer');
+    Route::get('/explorer/search', [NavController::class, 'search'])->name('api.courses.search');
 
     Route::get('/home/profile', [ProfileController::class, 'profile'])->name('profile');
     Route::post('home/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
