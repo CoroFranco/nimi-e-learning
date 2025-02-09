@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'https://nimi-e-learning-production.up.railway.app'),
 
     /*
     |--------------------------------------------------------------------------
