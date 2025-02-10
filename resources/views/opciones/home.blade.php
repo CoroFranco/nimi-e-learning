@@ -1,4 +1,4 @@
-<x-appLayout>
+<x-app-layout>
     <main class="bg-white flex-1 flex flex-col">
         <div class=" pb-4 pt-8 px-20 flex w-full">
             <input type="text" placeholder="Buscar cursos, tutoriales..." class="bg-gray-50 text-[1.6rem] font-semibold w-full rounded-[20px] py-[1.2rem] px-[1.6rem] border-[#c3c6d6] border-solid border-[1px] outline-[var(--hover-color)]">
@@ -48,4 +48,4 @@
 
         
     </main>
-</x-appLayout>
+</x-app-layout>

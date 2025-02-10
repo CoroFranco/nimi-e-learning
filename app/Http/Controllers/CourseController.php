@@ -32,7 +32,7 @@ class CourseController extends Controller
             'price' => 'required|numeric|min:0',
             'level' => 'required|in:beginner,intermediate,advanced',
             'status' => 'required|in:draft,published,archived',
-            'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'modules' => 'required|array|min:1',
             'modules.*.title' => 'required|max:255',
             'modules.*.description' => 'nullable|string',

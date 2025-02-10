@@ -33,8 +33,8 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 
 
-Route::get('/explorer', [NavController::class, 'explorer'])->name('explorer');
-Route::get('/explorer/search', [NavController::class, 'search'])->name('api.courses.search');
+    Route::get('/explorer', [NavController::class, 'explorer'])->name('explorer');
+    Route::get('/explorer/search', [NavController::class, 'search'])->name('api.courses.search');
 
 
 
