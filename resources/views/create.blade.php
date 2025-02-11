@@ -35,8 +35,7 @@
                     </div>
                     <div class="mt-4 space-y-2">
                         <label for="description" class="block text-lg font-medium text-gray-600">Descripción del Curso</label>
-                        <div id="description-editor" class=""></div>
-                        <input type="hidden" name="description" id="description">
+                        <textarea name="description" id="description" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]"></textarea>
                     </div>
                 </div>
                 
@@ -121,7 +120,7 @@
         let quillEditors = {};
 
         document.addEventListener('DOMContentLoaded', function() {
-            const quill = new Quill(`#description-editor`, {
+            const quill = new Quill(`#description`, {
                 theme: 'snow',
                 modules: {
                     toolbar: [
