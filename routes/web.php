@@ -64,7 +64,7 @@ Route::middleware(['-auth'])->group(function () {
 
     Route::get('/checkout/{courseId}', [PaymentController::class, 'createCheckoutSession'])->name('checkout');
     Route::get('/payment/success/{courseId}', [PaymentController::class, 'success'])->name('payment.success');
-    Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+    Route::get('/payment/cancel/{courseId}', [PaymentController::class, 'cancel'])->name('payment.cancel');
 
     // Rutas para inscripciones/compras
 

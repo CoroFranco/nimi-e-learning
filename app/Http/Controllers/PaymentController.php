@@ -69,8 +69,9 @@ class PaymentController extends Controller
 }
 }
 
-public function cancel()
+public function cancel($courseId)
 {
-    return view('payment.cancel');
+    return redirect()->route('courses.show', ['course' => $courseId])
+        ->with('error', 'Nos has completado el pago.');
 }
 }
