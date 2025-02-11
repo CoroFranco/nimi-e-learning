@@ -12,6 +12,12 @@
                             {{ session('success') }}
                         </div>
                     @endif
+
+                    @if (session('error'))
+                        <div class="m-10 flex justify-center gap-10 text-[1.5rem] text-red-400">
+                            {{ session('error') }}
+                        </div>
+                    @endif
                     
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
                         <!-- Detalles del Curso -->
@@ -197,7 +203,7 @@
 
     const enrollButton = document.getElementById('enrollmentBtn');
     const enrollmentMessage = document.getElementById('enrollmentMessage');
-    const attachmentInput = document.getElementById('attachmentInput'); // Asegúrate de tener este input en tu HTML
+    const attachmentInput = document.getElementById('attachmentInput'); 
 
     
         });     

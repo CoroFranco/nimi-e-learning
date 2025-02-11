@@ -35,7 +35,7 @@ class PaymentController extends Controller
             ],
             'mode' => 'payment',
             'success_url' => route('payment.success', ['courseId' => $courseId]),
-            'cancel_url' => route('payment.cancel'),
+            'cancel_url' => route('payment.cancel', ['courseId' => $courseId]),
         ]);
 
         return redirect($session->url);
