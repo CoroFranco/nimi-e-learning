@@ -12,11 +12,12 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="icon" type="image/png" sizes="16x16" href="/img/fav.jpeg">
         <link rel="icon" type="image/png" sizes="32x32" href="/img/fav.jpeg"> 
+        <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-        <script src="https://cdn.tiny.cloud/1/lmgieupkixx4xa232zm63l0qvg7ece6egpx8eynnfck5v8fg/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     </head>
     <body class="bg-[#fafafa] text-[var(--text-color)] flex flex-col min-h-screen">
     <div class="flex flex-col md:flex-row flex-grow">

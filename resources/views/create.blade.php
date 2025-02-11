@@ -1,36 +1,6 @@
 <x-app-layout>
-    @push('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script>
-        
-    tinymce.init({
-        skin: 'oxide-dark',
-        content_css: 'dark',
-        menubar: true,
-    
-          selector: 'textarea',
-          plugins: [
-            // Core editing features
-            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-            // Your account includes a free trial of TinyMCE premium features
-            // Try the most popular premium features until Dec 18, 2024:
-            'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown',
-            // Early access to document converters
-            'importword', 'exportword', 'exportpdf'
-          ],
-          toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat | code',
-          tinycomments_mode: 'embedded',
-          tinycomments_author: 'Author name',
-          valid_elements: '*[*]',
-          extended_valid_elements: 'pre,code',
-          mergetags_list: [
-            { value: 'First.Name', title: 'First Name' },
-            { value: 'Email', title: 'Email' },
-          ],
-          ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-        });
-      </script>
-    @endpush
+
+
     <div class="flex-grow p-6 md:overflow-y-auto md:p-12 bg-gray-100">
         <div class="max-w-[1200px] mx-auto">
             <h1 class="text-6xl font-bold mb-8 text-gray-800">Crear Nuevo Curso</h1>
@@ -65,7 +35,8 @@
                     </div>
                     <div class="mt-4 space-y-2">
                         <label for="description" class="block text-lg font-medium text-gray-600">Descripción del Curso</label>
-                        <textarea name="description" id="description" rows="4" class="text-lg rich-text-editor w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"></textarea>
+                        <div id="description-editor" class=""></div>
+                        <input type="hidden" name="description" id="description">
                     </div>
                 </div>
                 
@@ -147,6 +118,31 @@
 
     <script>
         let moduleCount = 0;
+        let quillEditors = {};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const quill = new Quill(`#description-editor`, {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        ['blockquote', 'code-block'],
+                        [{ 'header': 1 }, { 'header': 2 }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'script': 'sub'}, { 'script': 'super' }],
+                        [{ 'indent': '-1'}, { 'indent': '+1' }],
+                        [{ 'direction': 'rtl' }],
+                        [{ 'size': ['small', false, 'large', 'huge'] }],
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'font': [] }],
+                        [{ 'align': [] }],
+                        ['clean']
+                    ]
+                }
+            });
+  });
+        
 
         document.getElementById('add-module').addEventListener('click', addModule);
         document.getElementById('course-form').addEventListener('submit', function(event) {
@@ -155,257 +151,262 @@
         });
 
         // Thumbnail preview functionality
-const thumbnailInput = document.getElementById('thumbnail');
-const dropZone = document.getElementById('drop-zone');
-const thumbnailPreview = document.getElementById('thumbnail-preview');
-const thumbnailImage = document.getElementById('thumbnail-image');
+        const thumbnailInput = document.getElementById('thumbnail');
+        const dropZone = document.getElementById('drop-zone');
+        const thumbnailPreview = document.getElementById('thumbnail-preview');
+        const thumbnailImage = document.getElementById('thumbnail-image');
 
-// Make entire drop zone clickable
-dropZone.addEventListener('click', () => {
-    thumbnailInput.click();
-});
+        // Make entire drop zone clickable
+        dropZone.addEventListener('click', () => {
+            thumbnailInput.click();
+        });
 
-// Drag and drop functionality
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropZone.addEventListener(eventName, preventDefaults, false);
-});
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
 
-function preventDefaults(e) {
-    e.preventDefault();
-    e.stopPropagation();
-}
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
 
-['dragenter', 'dragover'].forEach(eventName => {
-    dropZone.addEventListener(eventName, highlight, false);
-});
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
 
-['dragleave', 'drop'].forEach(eventName => {
-    dropZone.addEventListener(eventName, unhighlight, false);
-});
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
 
-function highlight() {
-    dropZone.classList.add('border-blue-500');
-}
+        function highlight() {
+            dropZone.classList.add('border-blue-500');
+        }
 
-function unhighlight() {
-    dropZone.classList.remove('border-blue-500');
-}
+        function unhighlight() {
+            dropZone.classList.remove('border-blue-500');
+        }
 
-// Handle file selection
-thumbnailInput.addEventListener('change', handleFiles);
-dropZone.addEventListener('drop', handleDrop);
+        // Handle file selection
+        thumbnailInput.addEventListener('change', handleFiles);
+        dropZone.addEventListener('drop', handleDrop);
 
-function handleDrop(e) {
-    const dt = e.dataTransfer;
-    const files = dt.files;
-    handleFiles(files);
-}
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
 
-function handleFiles(files) {
-    const file = files instanceof FileList ? files[0] : files.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            thumbnailImage.src = e.target.result;
-            thumbnailPreview.classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
-    }
-}
+        function handleFiles(files) {
+            const file = files instanceof FileList ? files[0] : files.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    thumbnailImage.src = e.target.result;
+                    thumbnailPreview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
-    // Add global expand/collapse button
-    const modulesContainer = document.getElementById('modules-container');
-    const globalToggleButton = document.createElement('button');
-    globalToggleButton.type = 'button';
-    globalToggleButton.className = 'text-xl mb-4 px-4 py-2 bg-[var(--highlight-color)] text-white rounded-md hover:bg-[var(--hover-color)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--highlight-color)]';
-    globalToggleButton.textContent = 'Expandir/Contraer Todos los Módulos';
-    globalToggleButton.addEventListener('click', toggleAllModules);
-    
-    // Insert the button before the modules container
-    modulesContainer.parentNode.insertBefore(globalToggleButton, modulesContainer);
+            // Add global expand/collapse button
+            const modulesContainer = document.getElementById('modules-container');
+            const globalToggleButton = document.createElement('button');
+            globalToggleButton.type = 'button';
+            globalToggleButton.className = 'text-xl mb-4 px-4 py-2 bg-[var(--highlight-color)] text-white rounded-md hover:bg-[var(--hover-color)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--highlight-color)]';
+            globalToggleButton.textContent = 'Expandir/Contraer Todos los Módulos';
+            globalToggleButton.addEventListener('click', toggleAllModules);
+            
+            // Insert the button before the modules container
+            modulesContainer.parentNode.insertBefore(globalToggleButton, modulesContainer);
 
-    // Modify addModule function to include collapse/expand functionality
-    const originalAddModule = window.addModule;
-    window.addModule = function() {
-        // Call the original addModule function
-        originalAddModule();
-        
-        // Get the last added module
-        const modules = document.querySelectorAll('.module');
-        const latestModule = modules[modules.length - 1];
-        
-        // Add collapse/expand functionality to the latest module
-        addModuleCollapseHeaders(latestModule);
-    };
+            // Modify addModule function to include collapse/expand functionality
+            const originalAddModule = window.addModule;
+            window.addModule = function() {
+                // Call the original addModule function
+                originalAddModule();
+                
+                // Get the last added module
+                const modules = document.querySelectorAll('.module');
+                const latestModule = modules[modules.length - 1];
+                
+                // Add collapse/expand functionality to the latest module
+                addModuleCollapseHeaders(latestModule);
+            };
 
-    // Initial setup of existing modules
-    document.querySelectorAll('.module').forEach(addModuleCollapseHeaders);
-});
+            // Initial setup of existing modules
+            document.querySelectorAll('.module').forEach(addModuleCollapseHeaders);
+        });
 
-function addModuleCollapseHeaders(moduleElement) {
-    const moduleHeader = moduleElement.querySelector('h3');
-    
-    // Modify the header to be interactive
-    moduleHeader.classList.add('cursor-pointer', 'flex', 'items-center', 'justify-between', 'hover:bg-gray-200', 'transition-colors', 'duration-200', 'rounded-md', 'p-2', '-ml-2');
-    
-    const toggleButton = document.createElement('button');
-    toggleButton.type = 'button';
-    toggleButton.className = 'transition-transform duration-300 ease-in-out transform hover:scale-110';
-    toggleButton.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 hover:text-gray-900 chevron-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path class="origin-center transition-transform duration-300 ease-in-out" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-        </svg>
-    `;
-    toggleButton.setAttribute('aria-expanded', 'true');
-    
-    // Function to toggle module
-    const toggleModule = () => {
-        const moduleContent = moduleElement.querySelector('.module-content');
-        const svgPath = toggleButton.querySelector('path');
-        const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
-        
-        if (isExpanded) {
-            // Collapse
-            gsap.to(moduleContent, {
-                height: 0,
-                opacity: 0,
-                duration: 0.8,
-                ease: "power2.inOut",
-                onComplete: () => {
-                    moduleContent.classList.add('hidden');
-                    svgPath.classList.add('rotate-180');
-                }
-            });
-            toggleButton.setAttribute('aria-expanded', 'false');
-        } else {
-            // Expand
-            moduleContent.classList.remove('hidden');
-            gsap.fromTo(moduleContent, 
-                { height: 0, opacity: 0 },
-                {
-                    height: 'auto',
-                    opacity: 1,
-                    duration: 0.8,
-                    ease: "power2.inOut",
-                    onComplete: () => {
-                        svgPath.classList.remove('rotate-180');
-                    }
-                }
-            );
-            toggleButton.setAttribute('aria-expanded', 'true');
-        }
-    };
-    
-    // Add click event to the entire header
-    moduleHeader.addEventListener('click', toggleModule);
-    
-    // Append the toggle button to the header
-    moduleHeader.appendChild(toggleButton);
-}
-
-function toggleAllModules() {
-    const modules = document.querySelectorAll('.module');
-    const firstModuleToggleButton = modules[0]?.querySelector('h3 button');
-    
-    if (!firstModuleToggleButton) return;
-    
-    const isCurrentlyExpanded = firstModuleToggleButton.getAttribute('aria-expanded') === 'true';
-    
-    modules.forEach(moduleElement => {
-        const moduleContent = moduleElement.querySelector('.module-content');
-        const toggleButton = moduleElement.querySelector('h3 button');
-        const svgPath = toggleButton.querySelector('path');
-        
-        if (isCurrentlyExpanded) {
-            // Collapse with animation
-            gsap.to(moduleContent, {
-                height: 0,
-                opacity: 0,
-                duration: 1,
-                ease: "power2.inOut",
-                onComplete: () => {
-                    moduleContent.classList.add('hidden');
-                    svgPath.style.transform = 'rotate(180deg)';
-                }
-            });
-            toggleButton.setAttribute('aria-expanded', 'false');
-        } else {
-            // Expand with animation
-            moduleContent.classList.remove('hidden');
-            gsap.fromTo(moduleContent, 
-                { height: 0, opacity: 0 },
-                {
-                    height: 'auto',
-                    opacity: 1,
-                    duration: 1,
-                    ease: "power2.inOut",
-                    onComplete: () => {
-                        svgPath.style.transform = 'rotate(0deg)';
-                    }
-                }
-            );
-            toggleButton.setAttribute('aria-expanded', 'true');
-        }
-    });
-}
-
-// Modify the addModule function to wrap existing content in .module-content
-function addModule() {
-    moduleCount++;
-    const moduleHtml = `
-        <div id="module-${moduleCount}" class="module bg-gray-100 rounded-lg p-6 mb-4 relative opacity-0 scale-95">
-            <button type="button" class="text-xl absolute top-2 right-2 text-red-500 hover:text-red-700" onclick="removeModule(${moduleCount})">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        function addModuleCollapseHeaders(moduleElement) {
+            const moduleHeader = moduleElement.querySelector('h3');
+            
+            // Modify the header to be interactive
+            moduleHeader.classList.add('cursor-pointer', 'flex', 'items-center', 'justify-between', 'hover:bg-gray-200', 'transition-colors', 'duration-200', 'rounded-md', 'p-2', '-ml-2');
+            
+            const toggleButton = document.createElement('button');
+            toggleButton.type = 'button';
+            toggleButton.className = 'transition-transform duration-300 ease-in-out transform hover:scale-110';
+            toggleButton.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 hover:text-gray-900 chevron-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path class="origin-center transition-transform duration-300 ease-in-out" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
-            </button>
-            <h3 class="text-2xl font-semibold mb-4 text-gray-700">Módulo ${moduleCount}</h3>
-            <div class="module-content">
-                <div>
-                    <label class="block text-lg font-medium text-gray-700 mb-1">Título del Módulo</label>
-                    <input type="text" name="modules[${moduleCount}][title]" required class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]">
-                </div>
-                <div class="mt-4">
-                    <label class="block text-lg font-medium text-gray-700 mb-1">Descripción del Módulo</label>
-                    <textarea name="modules[${moduleCount}][description]" rows="3" class="rich-text-editor text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]"></textarea>
-                </div>
-                <div class="mt-4">
-                    <h4 class="text-4xl font-medium mb-2 text-gray-700">Lecciones</h4>
-                    <div id="lessons-container-${moduleCount}" class="space-y-4">
-                        <!-- Las lecciones se agregarán dinámicamente aquí -->
-                    </div>
-                    <button type="button" class="text-xl mt-4 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onclick="addLesson(${moduleCount})">
-                        Agregar Lección
+            `;
+            toggleButton.setAttribute('aria-expanded', 'true');
+            
+            // Function to toggle module
+            const toggleModule = () => {
+                const moduleContent = moduleElement.querySelector('.module-content');
+                const svgPath = toggleButton.querySelector('path');
+                const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
+                
+                if (isExpanded) {
+                    // Collapse
+                    gsap.to(moduleContent, {
+                        height: 0,
+                        opacity: 0,
+                        duration: 0.8,
+                        ease: "power2.inOut",
+                        onComplete: () => {
+                            moduleContent.classList.add('hidden');
+                            svgPath.classList.add('rotate-180');
+                        }
+                    });
+                    toggleButton.setAttribute('aria-expanded', 'false');
+                } else {
+                    // Expand
+                    moduleContent.classList.remove('hidden');
+                    gsap.fromTo(moduleContent, 
+                        { height: 0, opacity: 0 },
+                        {
+                            height: 'auto',
+                            opacity: 1,
+                            duration: 0.8,
+                            ease: "power2.inOut",
+                            onComplete: () => {
+                                svgPath.classList.remove('rotate-180');
+                            }
+                        }
+                    );
+                    toggleButton.setAttribute('aria-expanded', 'true');
+                }
+            };
+            
+            // Add click event to the entire header
+            moduleHeader.addEventListener('click', toggleModule);
+            
+            // Append the toggle button to the header
+            moduleHeader.appendChild(toggleButton);
+        }
+
+        function toggleAllModules() {
+            const modules = document.querySelectorAll('.module');
+            const firstModuleToggleButton = modules[0]?.querySelector('h3 button');
+            
+            if (!firstModuleToggleButton) return;
+            
+            const isCurrentlyExpanded = firstModuleToggleButton.getAttribute('aria-expanded') === 'true';
+            
+            modules.forEach(moduleElement => {
+                const moduleContent = moduleElement.querySelector('.module-content');
+                const toggleButton = moduleElement.querySelector('h3 button');
+                const svgPath = toggleButton.querySelector('path');
+                
+                if (isCurrentlyExpanded) {
+                    // Collapse with animation
+                    gsap.to(moduleContent, {
+                        height: 0,
+                        opacity: 0,
+                        duration: 1,
+                        ease: "power2.inOut",
+                        onComplete: () => {
+                            moduleContent.classList.add('hidden');
+                            svgPath.style.transform = 'rotate(180deg)';
+                        }
+                    });
+                    toggleButton.setAttribute('aria-expanded', 'false');
+                } else {
+                    // Expand with animation
+                    moduleContent.classList.remove('hidden');
+                    gsap.fromTo(moduleContent, 
+                        { height: 0, opacity: 0 },
+                        {
+                            height: 'auto',
+                            opacity: 1,
+                            duration: 1,
+                            ease: "power2.inOut",
+                            onComplete: () => {
+                                svgPath.style.transform = 'rotate(0deg)';
+                            }
+                        }
+                    );
+                    toggleButton.setAttribute('aria-expanded', 'true');
+                }
+            });
+        }
+
+        function addModule() {
+            moduleCount++;
+            const moduleHtml = `
+                <div id="module-${moduleCount}" class="module bg-gray-100 rounded-lg p-6 mb-4 relative opacity-0 scale-95">
+                    <button type="button" class="text-xl absolute top-2 right-2 text-red-500 hover:text-red-700" onclick="removeModule(${moduleCount})">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </button>
+                    <h3 class="text-2xl font-semibold mb-4 text-gray-700">Módulo ${moduleCount}</h3>
+                    <div class="module-content">
+                        <div>
+                            <label class="block text-lg font-medium text-gray-700 mb-1">Título del Módulo</label>
+                            <input type="text" name="modules[${moduleCount}][title]" required class="text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]">
+                        </div>
+                        <div class="mt-4">
+                            <label class="block text-lg font-medium text-gray-700 mb-1">Descripción del Módulo</label>
+                            <div id="module-description-${moduleCount}" class="h-32"></div>
+                            <input type="hidden" name="modules[${moduleCount}][description]">
+                        </div>
+                        <div class="mt-4">
+                            <h4 class="text-4xl font-medium mb-2 text-gray-700">Lecciones</h4>
+                            <div id="lessons-container-${moduleCount}" class="space-y-4">
+                                <!-- Las lecciones se agregarán dinámicamente aquí -->
+                            </div>
+                            <button type="button" class="text-xl mt-4 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onclick="addLesson(${moduleCount})">
+                                Agregar Lección
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    `;
-    document.getElementById('modules-container').insertAdjacentHTML('beforeend', moduleHtml);
-    
-    // Add GSAP animation for module
-    const newModule = document.getElementById(`module-${moduleCount}`);
-    gsap.to(newModule, {
-        opacity: 1,
-        scale: 1,
-        duration: 1,
-        ease: "power2.out"
-    });
-    
-    // Add collapse/expand functionality to the new module
-    addModuleCollapseHeaders(newModule);
-}
+            `;
+            document.getElementById('modules-container').insertAdjacentHTML('beforeend', moduleHtml);
+            
+            // Add GSAP animation for module
+            const newModule = document.getElementById(`module-${moduleCount}`);
+            gsap.to(newModule, {
+                opacity: 1,
+                scale: 1,
+                duration: 1,
+                ease: "power2.out"
+            });
+            
+            // Add collapse/expand functionality to the new module
+            addModuleCollapseHeaders(newModule);
+
+            // Initialize Quill editor for module description after a short delay
+            setTimeout(() => {
+                initializeQuillEditor(`module-description-${moduleCount}`, `modules[${moduleCount}][description]`);
+            }, 100);
+        }
 
         function removeModule(moduleId) {
             document.getElementById(`module-${moduleId}`).remove();
         }
 
         function addLesson(moduleId) {
-    const lessonsContainer = document.getElementById(`lessons-container-${moduleId}`);
-    const lessonCount = lessonsContainer.children.length + 1;
-    const lessonHtml = `
-        <div class="lesson bg-white rounded-lg p-4 relative opacity-0 scale-95">
+            const lessonsContainer = document.getElementById(`lessons-container-${moduleId}`);
+            const lessonCount = lessonsContainer.children.length + 1;
+            const lessonHtml = `
+                <div class="lesson bg-white rounded-lg p-4 relative opacity-0 scale-95">
                     <button type="button" class="text-xl absolute top-2 right-2 text-red-500 hover:text-red-700" onclick="this.closest('.lesson').remove()">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -426,7 +427,8 @@ function addModule() {
                     </div>
                     <div class="mt-2">
                         <label class="block text-lg font-medium text-gray-700 mb-1">Descripción</label>
-                        <textarea name="modules[${moduleId}][lessons][${lessonCount}][description]" rows="2" class="rich-text-editor text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]"></textarea>
+                        <div id="lesson-description-${moduleId}-${lessonCount}" class="h-24"></div>
+                        <input type="hidden" name="modules[${moduleId}][lessons][${lessonCount}][description]">
                     </div>
                     <div class="mt-2 content-field" id="content-field-${moduleId}-${lessonCount}">
                         <!-- El campo de contenido se mostrará aquí según el tipo seleccionado -->
@@ -435,24 +437,22 @@ function addModule() {
             `;
             lessonsContainer.insertAdjacentHTML('beforeend', lessonHtml);
     
-    // Add GSAP animation for lesson
-    const newLesson = lessonsContainer.lastElementChild;
-    gsap.to(newLesson, {
-        opacity: 1,
-        scale: 1,
-        duration: 1,
-        ease: "power2.out"
-    });
+            // Add GSAP animation for lesson
+            const newLesson = lessonsContainer.lastElementChild;
+            gsap.to(newLesson, {
+                opacity: 1,
+                scale: 1,
+                duration: 1,
+                ease: "power2.out"
+            });
     
-    tinymce.init({
-        skin: 'oxide-dark',
-        content_css: 'dark',
-        menubar: true,
-        selector: `#lessons-container-${moduleId} .lesson:last-child .rich-text-editor`
-    });
+            // Initialize Quill editor for lesson description after a short delay
+            setTimeout(() => {
+                initializeQuillEditor(`lesson-description-${moduleId}-${lessonCount}`, `modules[${moduleId}][lessons][${lessonCount}][description]`);
+            }, 100);
     
-    showContentField(document.querySelector(`#lessons-container-${moduleId} .lesson:last-child select`), moduleId, lessonCount);
-}
+            showContentField(document.querySelector(`#lessons-container-${moduleId} .lesson:last-child select`), moduleId, lessonCount);
+        }
 
         function showContentField(select, moduleId, lessonId) {
             const contentField = document.getElementById(`content-field-${moduleId}-${lessonId}`);
@@ -471,7 +471,8 @@ function addModule() {
                 case 'text':
                     fieldHtml = `
                         <label class="block text-lg font-medium text-gray-700 mb-1">Contenido de Texto</label>
-                        <textarea name="modules[${moduleId}][lessons][${lessonId}][content]" rows="6" class="rich-text-editor text-lg w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--highlight-color)] focus:border-[var(--highlight-color)]"></textarea>
+                        <div id="lesson-content-${moduleId}-${lessonId}" class="h-48"></div>
+                        <input type="hidden" name="modules[${moduleId}][lessons][${lessonId}][content]">
                     `;
                     break;
                 case 'quiz':
@@ -488,12 +489,9 @@ function addModule() {
 
             contentField.innerHTML = fieldHtml;
             if (lessonType === 'text') {
-                
-    tinymce.init({
-        skin: 'oxide-dark',
-        content_css: 'dark',
-        menubar: true,
-    selector: `#content-field-${moduleId}-${lessonId} .rich-text-editor`});
+                setTimeout(() => {
+                    initializeQuillEditor(`lesson-content-${moduleId}-${lessonId}`, `modules[${moduleId}][lessons][${lessonId}][content]`);
+                }, 100);
             } else if (lessonType === 'quiz') {
                 addQuizQuestion(moduleId, lessonId);
             }
@@ -512,8 +510,46 @@ function addModule() {
             document.getElementById(`quiz-questions-${moduleId}-${lessonId}`).insertAdjacentHTML('beforeend', questionHtml);
         }
 
+        function initializeQuillEditor(containerId, inputName) {
+            if (typeof Quill === 'undefined') {
+                console.error('Quill is not loaded yet');
+                return;
+            }
+
+            const quill = new Quill(`#${containerId}`, {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        ['blockquote', 'code-block'],
+                        [{ 'header': 1 }, { 'header': 2 }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'script': 'sub'}, { 'script': 'super' }],
+                        [{ 'indent': '-1'}, { 'indent': '+1' }],
+                        [{ 'direction': 'rtl' }],
+                        [{ 'size': ['small', false, 'large', 'huge'] }],
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'font': [] }],
+                        [{ 'align': [] }],
+                        ['clean']
+                    ]
+                }
+            });
+
+            quill.on('text-change', function() {
+                document.querySelector(`input[name="${inputName}"]`).value = quill.root.innerHTML;
+            });
+
+            quillEditors[containerId] = quill;
+        }
+
         function submitForm() {
-            tinymce.triggerSave();
+            // Update all Quill editor contents before submitting
+            Object.values(quillEditors).forEach(editor => {
+                const inputName = editor.container.nextElementSibling.name;
+                document.querySelector(`input[name="${inputName}"]`).value = editor.root.innerHTML;
+            });
 
             const form = document.getElementById('course-form');
             const formData = new FormData(form);
