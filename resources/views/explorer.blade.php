@@ -155,7 +155,7 @@
     coursesGrid.innerHTML = courses.map(course => `
         <div class="bg-[var(--courses-bg)] rounded-xl shadow-xl transform transition-all duration-300 ease-in-out hover:scale-100px hover:shadow-2xl hover:translate-y-2">
             <div class="relative rounded-t-3xl overflow-hidden">
-                <img src="storage/${course.thumbnail_path}" alt="${course.title}" class="w-full h-60 object-cover transition-transform duration-500 ease-in-out hover:scale-110">
+                <img src="${course.thumbnail_path}" alt="${course.title}" class="w-full h-60 object-cover transition-transform duration-500 ease-in-out hover:scale-110">
                 <div class="absolute top-4 right-4 bg-[var(--highlight-color)] text-[var(--text-color-index)] text-xl font-semibold py-2 px-4 rounded-full shadow-lg">
                     ${course.category.name}
                 </div>
