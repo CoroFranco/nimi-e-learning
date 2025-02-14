@@ -32,7 +32,8 @@ class CourseController extends Controller
             'price' => 'required|numeric|min:0',
             'level' => 'required|in:beginner,intermediate,advanced',
             'status' => 'required|in:draft,published,archived',
-            'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'thumbnailPath' => 'required|string|max:255',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'modules' => 'required|array|min:1',
             'modules.*.title' => 'required|max:255',
             'modules.*.description' => 'nullable|string',
@@ -53,8 +54,9 @@ class CourseController extends Controller
         $course->instructor_id = Auth::id();
 
         // Guardar la miniatura si existe
-        if ($request->hasFile('thumbnail')) {
-            $thumbnailPath = $request->file('thumbnail')->store('course_thumbnails', 'public');
+        if ($request->has('thumbnailPath')) {
+            $filename = $request->input('thumbnailPath'); // Obtener el nombre del archivo como string
+            $thumbnailPath = "https://axhsjnswjyj3.objectstorage.sa-bogota-1.oci.customer-oci.com/p/fVoPVPbFo-Ws88ycogDGudNo3KNkbO_duONoZlMZdEi4KPRXrwIThCMDSh6DPD-o/n/axhsjnswjyj3/b/Prueba-Reper/o/" . $filename;
             $course->thumbnail_path = $thumbnailPath;
         }
 

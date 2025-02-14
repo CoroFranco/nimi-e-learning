@@ -116,6 +116,75 @@
     </div>
 
     <script>
+        window.oracleConfig = {!! json_encode($oracleConfig) !!};
+
+      async function fileExists(fileName) {
+        const host = `axhsjnswjyj3.objectstorage.${window.oracleConfig.region}.oci.customer-oci.com`;
+        const url = `https://${host}/p/${window.oracleConfig.tenancySearch}/b/${window.oracleConfig.bucketName}/o/${fileName}`;
+
+        try {
+          const response = await fetch(url, { method: 'GET' });
+          if (!response.ok) {
+            return false;
+          }
+          return true;
+        } catch (error) {
+          console.error('Error al verificar archivo:', error);
+          return false;
+        }
+      }
+
+      async function uploadImage() {
+        const input = document.getElementById('thumbnail');
+        let file = input.files[0];
+        if (!file) {
+          alert('Por favor, seleccione una imagen');
+          return;
+        }
+
+        let fileName = file.name;
+    let exists = await fileExists(fileName);
+    let counter = 1;
+
+    // Separar el nombre de la extensión correctamente
+    const nameParts = fileName.split('.');
+    const extension = nameParts.pop(); // Extrae la última parte como extensión
+    let baseName = nameParts.join('.'); // Junta el resto como nombre del archivo
+
+    // Evitar duplicados de nombres
+    while (exists) {
+        fileName = `${baseName}_${counter}.${extension}`;
+        exists = await fileExists(fileName);
+        counter++;
+    }
+
+        const date = new Date().toUTCString();
+        const host = `axhsjnswjyj3.objectstorage.${window.oracleConfig.region}.oci.customer-oci.com`;
+        const path = `/p/${window.oracleConfig.tenancyId}/b/${window.oracleConfig.bucketName}/o/${fileName}`;
+
+        try {
+          const response = await fetch(`https://${host}${path}`, {
+            method: 'PUT',
+            headers: {
+              date: date,
+              'content-type': file.type,
+              'content-length': file.size,
+            },
+            body: file,
+          });
+
+          if (response.ok) {
+            return fileName;
+          } else {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+          }
+        } catch (error) {
+          console.error('Error al cargar la imagen:', error);
+        }
+        return fileName;
+      }
+
+     
         let moduleCount = 0;
         let quillEditors = {};
 
@@ -543,48 +612,59 @@
             quillEditors[containerId] = quill;
         }
 
-        function submitForm() {
-            // Update all Quill editor contents before submitting
-            Object.values(quillEditors).forEach(editor => {
-                const inputName = editor.container.nextElementSibling.name;
-                document.querySelector(`input[name="${inputName}"]`).value = editor.root.innerHTML;
-            });
+        async function submitForm() {
+                const thumbnailFileName = await uploadImage();
+                console.log('Nombre del archivo subido:', thumbnailFileName);
 
-            const form = document.getElementById('course-form');
-            const formData = new FormData(form);
+                if (!thumbnailFileName) {
+                    showAlert('error', 'Error al subir la imagen. Intenta nuevamente.');
+                    return; // Detener el proceso si la imagen no se subió correctamente
+                }
 
-            fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Server error');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    showAlert('success', data.message);
-                    setTimeout(() => {
-                        window.location.href = data.redirect;
-                    }, 2000);
-                } else {
-                    showAlert('error', 'Por favor, corrige los errores en el formulario.');
-                    if (data.errors) {
-                        displayErrors(data.errors);
+                // Actualizar los editores Quill antes de enviar el formulario
+                Object.values(quillEditors).forEach(editor => {
+                    const inputName = editor.container.nextElementSibling.name;
+                    document.querySelector(`input[name="${inputName}"]`).value = editor.root.innerHTML;
+                });
+
+                const form = document.getElementById('course-form');
+                const formData = new FormData(form);
+                formData.append('thumbnailPath', thumbnailFileName);
+                
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showAlert('error', 'Ha ocurrido un error. Por favor, inténtalo de nuevo.');
-            });
-        }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server error');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        showAlert('success', data.message);
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 2000);
+                    } else {
+                        showAlert('error', 'Por favor, corrige los errores en el formulario.');
+                        if (data.errors) {
+                            displayErrors(data.errors);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('error', 'Ha ocurrido un error. Por favor, inténtalo de nuevo.');
+                });
+            }
+
 
         function showAlert(type, message) {
             const alertContainer = document.getElementById('alert-container');

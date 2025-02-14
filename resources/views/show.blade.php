@@ -6,7 +6,6 @@
                     <h1 class="text-5xl md:text-6xl font-extrabold text-center text-indigo-900 mb-12">
                         {{ $course->title }}
                     </h1>
-                    <div class="m-10 flex justify-center gap-10 text-[1.5rem] " id="enrollmentMessage"></div>
                     @if (session('success'))
                         <div class="m-10 flex justify-center gap-10 text-[1.5rem] text-green-400">
                             {{ session('success') }}

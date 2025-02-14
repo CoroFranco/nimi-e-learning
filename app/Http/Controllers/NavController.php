@@ -11,10 +11,20 @@ use Illuminate\Support\Facades\Log;
 class NavController extends Controller
 {
     public function muestras()
-    {
-        $categories = Category::all();
-        return view('create', compact('categories'));
-    }
+{
+    $oracleConfig = [
+        'tenancyId' => config('oracle.tenancyId'),
+        'tenancySearch' => config('oracle.tenancySearch'),
+        'userId' => config('oracle.userId'),
+        'fingerprint' => config('oracle.fingerprint'),
+        'region' => config('oracle.region'),
+        'bucketName' => config('oracle.bucketName'),
+        'privateKey' => config('oracle.privateKey'),
+    ];
+
+    $categories = Category::all();
+    return view('create', compact('categories', 'oracleConfig'));
+}
 
     public function home()
     {
