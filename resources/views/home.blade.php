@@ -78,7 +78,7 @@
                 @if ($randomCourses)  
                     @foreach($randomCourses as $course)
                         <div class="bg-white rounded-lg shadow-md overflow-hidden transition duration-300 hover:shadow-xl">
-                            <img src="storage/{{$course->thumbnail_path}}" alt="Curso" class="w-full h-48 object-cover">
+                            <img src="{{$course->thumbnail_path}}" alt="Curso" class="w-full h-48 object-cover">
                             <div class="p-6">
                                 <h3 class="text-2xl font-semibold text-gray-900 mb-2">{{$course->title}}</h3>
                                 <p class="text-gray-600 mb-4">{{$course->description}}</p>
